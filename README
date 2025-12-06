@@ -1,0 +1,70 @@
+# One-Click REST API Deployment
+
+This project uses **Terraform** to deploy a REST API on AWS behind a Classic ELB with an Auto Scaling Group.  
+It includes scripts for one‑click deployment, testing, and teardown.
+
+---
+
+## 🚀 Deployment Steps
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/vsb1712/Devops-assignment.git
+   cd Devops-assignment/terraform
+
+terraform init
+terraform apply -auto-approve
+http://one-click-rest-api-elb-306287030.us-east-1.elb.amazonaws.com/
+
+2.Testing Steps
+Use the ELB DNS name from the output.
+
+Test the root endpoint: http://one-click-rest-api-elb-306287030.us-east-1.elb.amazonaws.com/
+Test the health endpoint: http://one-click-rest-api-elb-306287030.us-east-1.elb.amazonaws.com/health
+
+Teardown Steps
+To avoid AWS charges, destroy all resources when finished: terraform destroy -auto-approve
+
+
+GitHub Actions Workflow (Optional)
+You can automate deployment and teardown using GitHub Actions. Add a file .github/workflows/terraform.yml:
+
+name: Terraform CI/CD
+
+on:
+  workflow_dispatch:   # manual trigger
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve
+
+
+Summary
+Deploy: terraform apply -auto-approve
+
+Test: curl http://<ELB_DNS_NAME>/ and /health
+
+Teardown: terraform destroy -auto-approve
+
+Optional CI/CD: GitHub Actions workflow for automated deployment
+
